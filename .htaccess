@@ -4,5 +4,7 @@ Options +MultiViews
 RewriteEngine On
 RewriteBase /
 RewriteRule ^auth/register/(.*)$ /auth_user_post.php?auth=register&token=$1 [L]
+RewriteRule ^auth/reset$ /auth_user_post.php?auth=reset [L]
+RewriteRule ^auth/update$ /auth_user_post.php?auth=update [L]
 RewriteRule ^auth/register$ /auth_user_post.php?auth=register [L]
 RewriteRule ^auth/login$ /auth_user_post.php?auth=login [L]

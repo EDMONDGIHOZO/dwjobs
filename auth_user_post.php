@@ -54,7 +54,7 @@
                 }
             }
 			
-		}else if($_GET['auth'] == 'login' AND !isset($_GET['token'])){
+		}else if($_GET['auth'] == 'login'){
             
            
             $password = sha1($_POST['password']);
@@ -65,7 +65,11 @@
             if(!$UserAuth){
                 $job = 'ok';
                 $msg = 'Invalid username or password';
-            }else{
+            }else if($UserAuth['status'] == 'pending'){
+                $job = 'no';
+                $rep -> job = $job;
+                $msg = 'Your account is not verified!';
+            } else{
                 $job = 'ok';
                 $rep -> job = $job;
                 $user_id = $UserAuth['id'];
@@ -77,8 +81,44 @@
                 $rep -> level  = $level;
                 $msg = 'Successfull login';
             }
-		}
-        
+		}else if($_GET['auth'] == 'reset'){
+            $username = $_POST['username'];
+            $readUserId = $db -> query('SELECT * FROM users WHERE `email` = \''.$username.'\' OR `phone` = \''.$username.'\'') or die(print_r($db->errorinfo()));
+            $UserId = $readUserId -> fetch();
+            if(!$UserId){
+                $job = 'no';
+                $rep -> job = $job;
+                $msg = '"'.$username.'" doesn\'t assigned to any account !';
+            }else{
+               
+                $temp = uniqid();
+                $updateAuth = $db -> query('UPDATE `users` SET `temp` =  \''.$temp.'\' WHERE `id` = \''.$UserId['id'].'\' ');
+                if($updateAuth){
+                    $job = 'ok';
+                    $rep -> job = $job;
+                     // send email 
+                    $msg = 'A verification link has been sent to '.$username;
+                }
+               
+            }
+        }else if($_GET['auth'] == 'update'){
+            $temp = $_POST['temp'];
+            $username = $_POST['username'];
+            $password = sha1($_POST['password']);
+            $uniqid = uniqid();
+            $updatePass = $db -> query('UPDATE `users` SET `password` =  \''.$password.'\' , `temp` = \''.$uniqid.'\'  WHERE (`email` = \''.$username.'\' OR `phone` = \''.$username.'\') AND `temp` =  \''.$temp.'\'') or die(print_r($db->errorinfo()));
+            if($updatePass){
+                $job = 'ok';
+                $rep -> job = $job;
+                 // send email 
+                $msg = 'Password updated successfuly';
+            }else{
+                $job = 'no';
+                $rep -> job = $job;
+                 // send email 
+                $msg = 'Token expired';
+            }
+        }
     }else if($_GET['auth'] == 'register' AND isset($_GET['token'])){
         $readUserAuth = $db -> query('SELECT * FROM users LEFT JOIN users_auth ON users.id = users_auth.user_id WHERE users.temp = \''.$_GET['token'].'\' AND users_auth.token = \''.$_GET['token'].'\'') or die(print_r($db->errorinfo()));
         $UserAuth = $readUserAuth -> fetch();
