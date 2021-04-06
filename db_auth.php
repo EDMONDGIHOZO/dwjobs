@@ -1,6 +1,7 @@
 <?php 
-$HOST = 'localhost';
-$DBNAME = 'wdjobs_db';
-$USER = 'dwjobs';
-$PASSWORD = 'wd@JO2KXXI';
+
+use devCoder\DotEnv;
+(new DotEnv(__DIR__ . '/.env'))->load();
+echo getenv('DATABASE_DNS')
+
 ?>
