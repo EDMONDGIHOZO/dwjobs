@@ -1,10 +1,14 @@
 RewriteOptions inherit
 # REWRITE MODULE
-Options +MultiViews
+#Options +MultiViews
 RewriteEngine On
-RewriteBase /
-RewriteRule ^auth/register/(.*)$ /auth_user_post.php?auth=register&token=$1 [L]
-RewriteRule ^auth/reset$ /auth_user_post.php?auth=reset [L]
-RewriteRule ^auth/update$ /auth_user_post.php?auth=update [L]
-RewriteRule ^auth/register$ /auth_user_post.php?auth=register [L]
-RewriteRule ^auth/login$ /auth_user_post.php?auth=login [L]
+#RewriteCond %{HTTPS} off
+#RewriteRule (.*) https://%{SERVER_NAME} [R,L]
+RewriteRule ^([a-z-]+)$ /index.php?link=$1 [L]
+RewriteRule ^auth/register/(.*)$ /auth/auth_user_post.php?auth=register&token=$1 [L]
+RewriteRule ^auth/reset$ /auth/auth_user_post.php?auth=reset [L]
+RewriteRule ^auth/update$ /auth/auth_user_post.php?auth=update [L]
+RewriteRule ^auth/register$ /auth/auth_user_post.php?auth=register [L]
+RewriteRule ^auth/login$ /auth/auth_user_post.php?auth=login [L]
+RewriteRule ^auth/request/otp$ /auth/auth_user_post.php?auth=otp [L]
+ErrorDocument 404 /index.php?error=404
